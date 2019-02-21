@@ -1,7 +1,7 @@
 """This file contains a simple OpenR topology"""
 
 from ipmininet.iptopo import IPTopo
-from ipmininet.router.config import RouterConfig
+from ipmininet.router.config import RouterConfig, OpenrDaemon, Openr
 
 HOSTS_PER_ROUTER = 2
 
@@ -31,7 +31,7 @@ class SimpleOpenrNet(IPTopo):
                              params2={'v4_width': 5})
 
 
-        super(SimpleOpenRNet, self).build(*args, **kwargs)
+        super(SimpleOpenrNet, self).build(*args, **kwargs)
 
     def addRouter_openr(self, name):
         return self.addRouter(name, config=OpenrConfig)

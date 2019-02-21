@@ -40,7 +40,7 @@ class OpenrDomain(Overlay):
 class Openr(OpenrDaemon):
     """This class provides a simple configuration for an OpenR daemon."""
     NAME = 'openr'
-    DEPENDS = (OpenrDeamon,)
+    DEPENDS = (OpenrDaemon,)
     KILL_PATTERNS = (NAME,)
 
     def __init__(self, node, *args, **kwargs):
@@ -72,8 +72,7 @@ class Openr(OpenrDaemon):
                            spark_hold_time_s=i.get('openr_spark_hold_time_s',
                                           self.options.priority),
                            spark_keepalive_time_s=i.get('openr_spark_keepalive_time_s',
-                                          self.options.dead_int),
-                for i in interfaces]
+                                          self.options.dead_int)) for i in interfaces]
 
     def set_defaults(self, defaults):
         """:spark_hold_time_s: Dead interval timer
