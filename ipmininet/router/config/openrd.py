@@ -3,14 +3,17 @@ from .base import Daemon
 class OpenrDaemon(Daemon):
     """The base class for the OpenR daemon"""
 
-    # Additional parameters to pass when starting the daemon
-    STARTUP_LINE_EXTRA = ''
-    STARTUP_SCRIPT = 'run_openr.sh'
+    NAME = 'openr'
+
+    @property
+    def STARTUP_LINE_EXTRA(self):
+        # Add options to the standard startup line
+        return ''
 
     @property
     def startup_line(self):
-        return '{startup_script}'\
-                .format(startup_script=self.STARTUP_SCRIPT,
+        return '{name} {cfg} {extra}'\
+                .format(name=self.NAME,
                         cfg=self.cfg_filename,
                         extra=self.STARTUP_LINE_EXTRA)
 
@@ -26,6 +29,8 @@ class OpenrDaemon(Daemon):
 
     @property
     def dry_run(self):
-        return '{name} {cfg} --dryrun=true'\
-               .format(name=self.NAME,
-                       cfg=self.cfg_filename)
+        # The OpenR dryrun runs the daemon and does not shutdown the daemon
+        # TODO: Replace with a config parser or shutdown the daemon after few
+        # seconds
+        return '{name} --version'\
+               .format(name=self.NAME)
