@@ -1,4 +1,5 @@
 from .base import Daemon
+from .utils import ConfigDict, template_lookup
 
 class OpenrDaemon(Daemon):
     """The base class for the OpenR daemon"""
@@ -14,7 +15,7 @@ class OpenrDaemon(Daemon):
     def startup_line(self):
         return '{name} {cfg} {extra}'\
                 .format(name=self.NAME,
-                        cfg=self.cfg_filename,
+                        cfg=self._cfg_options(),
                         extra=self.STARTUP_LINE_EXTRA)
 
     def build(self):
@@ -26,6 +27,12 @@ class OpenrDaemon(Daemon):
         """:param debug: the set of debug events that should be logged"""
         defaults.debug = ()
         super(OpenrDaemon, self).set_defaults(defaults)
+
+    def _cfg_options(self):
+        cfg = ConfigDict()
+        cfg[self.NAME] = self.build()
+        return template_lookup.get_template(self.template_filename)\
+                                                  .render(node=cfg)
 
     @property
     def dry_run(self):
