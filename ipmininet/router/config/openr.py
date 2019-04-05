@@ -50,11 +50,12 @@ class Openr(OpenrDaemon):
         cfg = super(Openr, self).build()
         for key in self._default_config().keys():
             cfg[key] = self.options[key]
-
+        cfg.node_name = self._node.name
         interfaces = [itf
                       for itf in realIntfList(self._node)]
         cfg.interfaces = self._build_interfaces(interfaces)
         cfg.networks = self._build_networks(interfaces)
+        cfg.prefixes = self._build_prefixes(interfaces)
         return cfg
 
     def _build_networks(self, interfaces):
@@ -75,6 +76,12 @@ class Openr(OpenrDaemon):
                                           self.options.spark_hold_time_s),
                            spark_keepalive_time_s=i.get('openr_spark_keepalive_time_s',
                                           self.options.spark_keepalive_time_s)) for i in interfaces]
+
+    def _build_prefixes(self, interfaces):
+        ipv6_addresses = reduce(lambda x, y: x + y.addresses[6],
+                                 interfaces, [])
+        ipv6_addresses = filter(lambda x: not x.is_link_local, ipv6_addresses)
+        return ",".join(map(lambda x: x.with_prefixlen, ipv6_addresses))
 
     def set_defaults(self, defaults):
         for k, v in self._default_config().iteritems():
@@ -111,9 +118,9 @@ class Openr(OpenrDaemon):
                           fib_rep_port=60009,
                           health_checker_ping_interval_s=3,
                           health_checker_rep_port=60012,
-                          iface_prefixes="terra,nic1,nic2",
+                          ifname_prefix="r",
                           iface_regex_exclude="",
-                          iface_regex_include="",
+                          iface_regex_include="r.*",
                           ip_tos=192,
                           key_prefix_filters="",
                           kvstore_flood_msg_per_sec=0,
@@ -125,14 +132,15 @@ class Openr(OpenrDaemon):
                           link_monitor_cmd_port=60006,
                           loopback_iface="lo",
                           memory_limit_mb=300,
-                          min_log_level=0,
+                          minloglevel=0,
+                          node_name="",
                           override_loopback_addr=False,
                           prefix_manager_cmd_port=60011,
                           prefixes="",
                           redistribute_ifaces="lo1",
                           seed_prefix="",
                           set_leaf_node=False,
-                          set_loopback_addr=False,
+                          set_loopback_address=False,
                           spark_fastinit_keepalive_time_ms=100,
                           spark_hold_time_s=30,
                           spark_keepalive_time_s=3,
@@ -140,10 +148,11 @@ class Openr(OpenrDaemon):
                           tls_acceptable_peers="",
                           tls_ecc_curve_name="prime256v1",
                           tls_ticket_seed_path="",
-                          verbosity=1,
+                          v=1,
                           x509_ca_path="",
                           x509_cert_path="",
-                          x509_key_path="")
+                          x509_key_path="",
+                          log_dir="/var/log")
 
 
     def is_active_interface(self, itf):

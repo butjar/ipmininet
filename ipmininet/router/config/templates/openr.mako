@@ -1,70 +1,75 @@
 <%
-   ifaces_head, ifaces_tail = node['openr'].interfaces[0], node['openr'].interfaces[1:]
-   ifaces = reduce(lambda x,y: x + ',' + y.name, ifaces_tail, ifaces_head.name)
+    # Read value from node or use default value
+    def getConfig(key, default):
+        if key in node['openr']:
+            val = node['openr'][key]
+        else:
+            val = default
+        return "--{k}={v}".format(k=key, v=val)
 %>\
---alloc_prefix_len=${node['openr'].alloc_prefix_len} \
---assume_drained=${node['openr'].assume_drained} \
---config_store_filepath=${node['openr'].config_store_filepath} \
---decision_debounce_max_ms=${node['openr'].decision_debounce_max_ms} \
---decision_debounce_min_ms=${node['openr'].decision_debounce_min_ms} \
---decision_rep_port=${node['openr'].decision_rep_port} \
---domain=${node['openr'].domain} \
---dryrun=${node['openr'].dryrun} \
---enable_subnet_validation=${node['openr'].enable_subnet_validation} \
---enable_fib_sync=${node['openr'].enable_fib_sync} \
---enable_health_checker=${node['openr'].enable_health_checker} \
---enable_legacy_flooding=${node['openr'].enable_legacy_flooding} \
---enable_lfa=${node['openr'].enable_lfa} \
---enable_netlink_fib_handler=${node['openr'].enable_netlink_fib_handler} \
---enable_netlink_system_handler=${node['openr'].enable_netlink_system_handler} \
---enable_old_decision_module=${node['openr'].enable_old_decision_module} \
---enable_perf_measurement=${node['openr'].enable_perf_measurement} \
---enable_prefix_alloc=${node['openr'].enable_prefix_alloc} \
---enable_rtt_metric=${node['openr'].enable_rtt_metric} \
---enable_secure_thrift_server=${node['openr'].enable_secure_thrift_server} \
---enable_segment_routing=${node['openr'].enable_segment_routing} \
---enable_spark=${node['openr'].enable_spark} \
---enable_v4=${node['openr'].enable_v4} \
---enable_watchdog=${node['openr'].enable_watchdog} \
---fib_handler_port=${node['openr'].fib_handler_port} \
---fib_rep_port=${node['openr'].fib_rep_port} \
---health_checker_ping_interval_s=${node['openr'].health_checker_ping_interval_s} \
---health_checker_rep_port=${node['openr'].health_checker_rep_port} \
---ifname_prefix=${node['openr'].iface_prefixes} \
---iface_regex_exclude=${node['openr'].iface_regex_exclude} \
---iface_regex_include=${node['openr'].iface_regex_include} \
---ip_tos=${node['openr'].ip_tos} \
---key_prefix_filters=${node['openr'].key_prefix_filters} \
---kvstore_flood_msg_per_sec=${node['openr'].kvstore_flood_msg_per_sec} \
---kvstore_flood_msg_burst_size=${node['openr'].kvstore_flood_msg_burst_size} \
---kvstore_flood_msg_per_sec=${node['openr'].kvstore_flood_msg_per_sec} \
---kvstore_ttl_decrement_ms=${node['openr'].kvstore_ttl_decrement_ms} \
---kvstore_zmq_hwm=${node['openr'].kvstore_zmq_hwm} \
---link_flap_initial_backoff_ms=${node['openr'].link_flap_initial_backoff_ms} \
---link_flap_max_backoff_ms=${node['openr'].link_flap_max_backoff_ms} \
---link_monitor_cmd_port=${node['openr'].link_monitor_cmd_port} \
---loopback_iface=${node['openr'].loopback_iface} \
---memory_limit_mb=${node['openr'].memory_limit_mb} \
---minloglevel=${node['openr'].min_log_level} \
---node_name="${node['openr'].node_name}" \
---override_loopback_addr=${node['openr'].override_loopback_addr} \
---prefix_manager_cmd_port=${node['openr'].prefix_manager_cmd_port} \
---prefixes="${node['openr'].prefixes}" \
---redistribute_ifaces=${node['openr'].redistribute_ifaces} \
---seed_prefix=${node['openr'].seed_prefix} \
---set_leaf_node=${node['openr'].set_leaf_node} \
---set_loopback_address=${node['openr'].set_loopback_addr} \
---spark_fastinit_keepalive_time_ms=${node['openr'].spark_fastinit_keepalive_time_ms} \
---spark_hold_time_s=${node['openr'].spark_hold_time_s} \
---spark_keepalive_time_s=${node['openr'].spark_keepalive_time_s} \
---static_prefix_alloc=${node['openr'].static_prefix_alloc} \
---tls_acceptable_peers=${node['openr'].tls_acceptable_peers} \
---tls_ecc_curve_name=${node['openr'].tls_ecc_curve_name} \
---tls_ticket_seed_path=${node['openr'].tls_ticket_seed_path} \
---x509_ca_path=${node['openr'].x509_ca_path} \
---x509_cert_path=${node['openr'].x509_cert_path} \
---x509_key_path=${node['openr'].x509_key_path} \
---logbufsecs=0 \
---logtostderr \
---max_log_size=1 \
---v=${node['openr'].verbosity} \
+${getConfig("alloc_prefix_len", 128)} \
+${getConfig("assume_drained", False)} \
+${getConfig("config_store_filepath", "/tmp/aq_persistent_config_store.bin")} \
+${getConfig("decision_debounce_max_ms", 250)} \
+${getConfig("decision_debounce_min_ms", 10)} \
+${getConfig("decision_rep_port", 60004)} \
+${getConfig("domain","openr")} \
+${getConfig("dryrun", False)} \
+${getConfig("enable_subnet_validation", True)} \
+${getConfig("enable_fib_sync", False)} \
+${getConfig("enable_health_checker", False)} \
+${getConfig("enable_legacy_flooding", True)} \
+${getConfig("enable_lfa", False)} \
+${getConfig("enable_netlink_fib_handler", True)} \
+${getConfig("enable_netlink_system_handler", True)} \
+${getConfig("enable_old_decision_module", False)} \
+${getConfig("enable_perf_measurement", True)} \
+${getConfig("enable_prefix_alloc", False)} \
+${getConfig("enable_rtt_metric", True)} \
+${getConfig("enable_secure_thrift_server", False)} \
+${getConfig("enable_segment_routing", False)} \
+${getConfig("enable_spark", True)} \
+${getConfig("enable_v4", False)} \
+${getConfig("enable_watchdog", True)} \
+${getConfig("fib_handler_port", 60100)} \
+${getConfig("fib_rep_port", 60009)} \
+${getConfig("health_checker_ping_interval_s", 3)} \
+${getConfig("health_checker_rep_port", 60012)} \
+${getConfig("ifname_prefix", "")} \
+${getConfig("iface_regex_exclude", "")} \
+${getConfig("iface_regex_include", "")} \
+${getConfig("ip_tos", 192)} \
+${getConfig("key_prefix_filters", "")} \
+${getConfig("kvstore_flood_msg_per_sec", 0)} \
+${getConfig("kvstore_flood_msg_burst_size", 0)} \
+${getConfig("kvstore_flood_msg_per_sec", 0)} \
+${getConfig("kvstore_ttl_decrement_ms", 1)} \
+${getConfig("kvstore_zmq_hwm", 65536)} \
+${getConfig("link_flap_initial_backoff_ms", 1000)} \
+${getConfig("link_flap_max_backoff_ms", 60000)} \
+${getConfig("link_monitor_cmd_port", 60006)} \
+${getConfig("loopback_iface", "lo")} \
+${getConfig("memory_limit_mb", 300)} \
+${getConfig("minloglevel", 0)} \
+${getConfig("node_name", "")} \
+${getConfig("override_loopback_addr", False)} \
+${getConfig("prefix_manager_cmd_port", 60011)} \
+${getConfig("prefixes", "")} \
+${getConfig("redistribute_ifaces", "lo1")} \
+${getConfig("seed_prefix", "")} \
+${getConfig("set_leaf_node", False)} \
+${getConfig("set_loopback_address", False)} \
+${getConfig("spark_fastinit_keepalive_time_ms", 100)} \
+${getConfig("spark_hold_time_s", 30)} \
+${getConfig("spark_keepalive_time_s", 3)} \
+${getConfig("static_prefix_alloc", False)} \
+${getConfig("tls_acceptable_peers", "")} \
+${getConfig("tls_ecc_curve_name", "prime256v1")} \
+${getConfig("tls_ticket_seed_path", "")} \
+${getConfig("x509_ca_path", "")} \
+${getConfig("x509_cert_path", "")} \
+${getConfig("x509_key_path", "")} \
+${getConfig("logbufsecs", 0)} \
+${getConfig("log_dir", "/var/log")} \
+${getConfig("max_log_size", 1)} \
+${getConfig("v", 1)} \

@@ -24,7 +24,6 @@ class SimpleOpenrNet(IPTopo):
         r3 = self.addRouter_openr('r3')
         self.addLink(r1, r2)
         self.addLink(r1, r3)
-        self.addLink(r3, r2)
         for r in (r1, r2, r3):
             for i in xrange(HOSTS_PER_ROUTER):
                 self.addLink(r, self.addHost('h%s%s' % (i, r)),
@@ -34,4 +33,5 @@ class SimpleOpenrNet(IPTopo):
         super(SimpleOpenrNet, self).build(*args, **kwargs)
 
     def addRouter_openr(self, name):
-        return self.addRouter(name, config=OpenrConfig)
+        return self.addRouter(name, config=OpenrConfig, privateDirs=[
+            '/tmp' ])
