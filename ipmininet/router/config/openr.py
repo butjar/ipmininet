@@ -56,6 +56,7 @@ class Openr(OpenrDaemon):
         cfg.interfaces = self._build_interfaces(interfaces)
         cfg.networks = self._build_networks(interfaces)
         cfg.prefixes = self._build_prefixes(interfaces)
+        cfg.update(cfg_overwrite)
         return cfg
 
     def _build_networks(self, interfaces):
@@ -72,10 +73,7 @@ class Openr(OpenrDaemon):
                            name=i.name,
                            # Is the interface between two routers?
                            active=self.is_active_interface(i),
-                           spark_hold_time_s=i.get('openr_spark_hold_time_s',
-                                          self.options.spark_hold_time_s),
-                           spark_keepalive_time_s=i.get('openr_spark_keepalive_time_s',
-                                          self.options.spark_keepalive_time_s)) for i in interfaces]
+                           ) for i in interfaces]
 
     def _build_prefixes(self, interfaces):
         ipv6_addresses = reduce(lambda x, y: x + y.addresses[6],
@@ -88,70 +86,11 @@ class Openr(OpenrDaemon):
             defaults[k] = v
         super(Openr, self).set_defaults(defaults)
 
-    def _default_config(self):
+    def _config_overwrite(self):
         """See https://github.com/facebook/openr/blob/master/openr/docs/Runbook.md"""
-        return ConfigDict(alloc_prefix_len=128,
-                          assume_drained=False,
-                          config_store_filepath="/tmp/aq_persistent_config_store.bin",
-                          decision_debounce_max_ms=250,
-                          decision_debounce_min_ms=10,
-                          decision_rep_port=60004,
-                          domain="openr",
-                          dryrun=False,
-                          enable_subnet_validation=True,
-                          enable_fib_sync=False,
-                          enable_health_checker=False,
-                          enable_legacy_flooding=True,
-                          enable_lfa=False,
-                          enable_netlink_fib_handler=True,
-                          enable_netlink_system_handler=True,
-                          enable_old_decision_module=False,
-                          enable_perf_measurement=True,
-                          enable_prefix_alloc=False,
-                          enable_rtt_metric=True,
-                          enable_secure_thrift_server=False,
-                          enable_segment_routing=False,
-                          enable_spark=True,
-                          enable_v4=False,
-                          enable_watchdog=True,
-                          fib_handler_port=60100,
-                          fib_rep_port=60009,
-                          health_checker_ping_interval_s=3,
-                          health_checker_rep_port=60012,
+        return ConfigDict(
                           ifname_prefix="r",
-                          iface_regex_exclude="",
                           iface_regex_include="r.*",
-                          ip_tos=192,
-                          key_prefix_filters="",
-                          kvstore_flood_msg_per_sec=0,
-                          kvstore_flood_msg_burst_size=0,
-                          kvstore_ttl_decrement_ms=1,
-                          kvstore_zmq_hwm=65536,
-                          link_flap_initial_backoff_ms=1000,
-                          link_flap_max_backoff_ms=60000,
-                          link_monitor_cmd_port=60006,
-                          loopback_iface="lo",
-                          memory_limit_mb=300,
-                          minloglevel=0,
-                          node_name="",
-                          override_loopback_addr=False,
-                          prefix_manager_cmd_port=60011,
-                          prefixes="",
-                          redistribute_ifaces="lo1",
-                          seed_prefix="",
-                          set_leaf_node=False,
-                          set_loopback_address=False,
-                          spark_fastinit_keepalive_time_ms=100,
-                          spark_hold_time_s=30,
-                          spark_keepalive_time_s=3,
-                          static_prefix_alloc=False,
-                          tls_acceptable_peers="",
-                          tls_ecc_curve_name="prime256v1",
-                          tls_ticket_seed_path="",
-                          v=1,
-                          x509_ca_path="",
-                          x509_cert_path="",
-                          x509_key_path="",
                           log_dir="/var/log")
 
 
