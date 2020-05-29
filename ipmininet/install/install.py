@@ -167,7 +167,8 @@ def install_openr(output_dir: str, openr_release=OpenrRelease,
     with open(openr_buildscript, "w+") as f:
         sh("python %s" % debian_system_builder,
            stdout=f,
-           cwd=openr_build).wait()
+           cwd=openr_build
+           output_stdout=False).wait()
     # Make build script executable
     os.chmod(openr_buildscript, stat.S_IRWXU)
     # Execute build script
