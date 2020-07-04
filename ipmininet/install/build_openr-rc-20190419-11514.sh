@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exit 1
+
 set -exo pipefail
 ### Install packages for Debian-based OS ###
 

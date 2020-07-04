@@ -151,7 +151,7 @@ def install_frrouting(output_dir: str):
         break
 
 
-def install_openr(output_dir: str, may_fail=False):
+def install_openr(output_dir: str, may_fail=True):
     # It's not possible to get a build script with pinned dependencies from the
     # OpenR github repository. The checked-in build script has the dependencies
     # pinned manually. Builds and installs OpenR release rc-20190419-11514.
