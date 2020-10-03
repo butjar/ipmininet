@@ -100,5 +100,8 @@ class Hub(IPBridge):
         :param _controllers: A parameter defined in LinuxBridge that actually
             does nothing
         """
-        br_init = lambda hub: hub.cmd('brctl setageing 0', hub)
+        def br_init(hub):
+            hub.cmd('brctl setageing 0', hub)
+            hub.cmd( 'brctl stp', hub, 'off')
+
         super().start(_controllers, br_init=br_init)
