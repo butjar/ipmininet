@@ -4,11 +4,13 @@ from typing import Union, Type, Dict, List, Optional, Tuple, Any
 
 from mininet.topo import Topo
 from mininet.log import lg
+from mininet.node import Node
 
 from ipmininet.overlay import Overlay, Subnet
 from ipmininet.utils import get_set, is_container
 from ipmininet.node_description import NodeDescription, RouterDescription,\
     HostDescription, LinkDescription
+from ipmininet.ipswitch import Hub
 from ipmininet.router import Router
 from ipmininet.router.config import BasicRouterConfig, OSPFArea, AS,\
     iBGPFullMesh, OpenrDomain
@@ -190,7 +192,7 @@ class IPTopo(Topo):
            returns: hub name"""
         if not opts and self.sopts:
             opts = self.sopts
-        result = self.addSwitch(name, stp=False, hub=True, **opts)
+        result = self.addSwitch(name, isHub=True, **opts)
         return result
 
     def isRouter(self, n: str) -> bool:
@@ -203,7 +205,7 @@ class IPTopo(Topo):
         """Check whether the given node is a router
 
         :param n: node name"""
-        return self.hasGenuineKey(n, 'hub')
+        return self.hasGenuineKey(n, 'isHub')
 
     def hosts(self, sort=True) -> List['HostDescription']:
         # The list is already sorted, simply filter out the routers
