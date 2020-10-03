@@ -62,15 +62,17 @@ class IPTopo(Topo):
 
     def addRouter(self,
                   name: str,
-                  cls: 'Router' = Router,
+                  cls: Union[Type[Router], None] = None,
                   routerDescription: 'RouterDescription' = RouterDescription,
                   **kwargs) -> 'RouterDescription':
         """Add a router to the topology
 
         :param name: the name of the node
-        :param cls: the router class of the node to create (optional)
-        "param routerDescription: the RouterDescription class to return
-            (optional)"""
+        :param cls: the router class of the node to create, default is set in
+                    the IPNet constructor (optional)
+        :param routerDescription: the RouterDescription class to return
+               (optional)
+        """
         return routerDescription(self.addNode(str(name),
                                               isRouter=True,
                                               cls=cls,
