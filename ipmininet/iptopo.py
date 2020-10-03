@@ -44,15 +44,19 @@ class IPTopo(Topo):
 
         :param net: The freshly built (Mininet) network"""
 
-    def isNodeType(self, n: str, x) -> bool:
+    def isNodeType(self, n: str, cls: Type[Node]) -> bool:
+        """Return if Node n has class cls
+
+        :param n: node name
+        :param cls: the Node class to check"""
+        return self.g.node[n].get('cls', None) == cls
+
+    def hasGenuineKey(self, n: str, x) -> bool:
         """Return whether node n has a key x set to True
 
         :param n: node name
         :param x: the key to check"""
-        try:
-            return self.g.node[n].get(x, False)
-        except KeyError:  # node not found
-            return False
+        return self.g.node[n].get(x, False) == True
 
     def addHost(self, name: str, **kwargs) -> 'HostDescription':
         """Add a host to the topology
@@ -193,13 +197,13 @@ class IPTopo(Topo):
         """Check whether the given node is a router
 
         :param n: node name"""
-        return self.isNodeType(n, 'isRouter')
+        return self.hasGenuineKey(n, 'isRouter')
 
     def isHub(self, n: str) -> bool:
         """Check whether the given node is a router
 
         :param n: node name"""
-        return self.isNodeType(n, 'hub')
+        return self.hasGenuineKey(n, 'hub')
 
     def hosts(self, sort=True) -> List['HostDescription']:
         # The list is already sorted, simply filter out the routers
