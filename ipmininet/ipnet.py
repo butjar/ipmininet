@@ -16,7 +16,7 @@ from .host import IPHost
 from .router import Router
 from .router.config import BasicRouterConfig, RouterConfig
 from .link import IPIntf, IPLink, PhysicalInterface
-from .ipswitch import IPSwitch
+from .ipswitch import IPBridge, IPSwitch, Hub
 
 from mininet.net import Mininet
 from mininet.node import Host, Controller, Node
@@ -43,7 +43,8 @@ class IPNet(Mininet):
                  host: Type[IPHost] = IPHost,
                  link: Type[IPLink] = IPLink,
                  intf: Type[IPIntf] = IPIntf,
-                 switch: Type[IPSwitch] = IPSwitch,
+                 switch: Type[IPBridge] = IPSwitch,
+                 hub: Type[Hub] = Hub,
                  controller: Optional[Type[Controller]] = None,
                  *args, **kwargs):
         """Extends Mininet by adding IP-related ivars/functions and
@@ -62,6 +63,7 @@ class IPNet(Mininet):
         :param igp_metric: The default IGP metric for the links
         :param igp_area: The default IGP area for the links"""
         self.router = router
+        self.hub = hub
         self.config = config
         self.routers = []  # type: List[Router]
         # We need this to be able to do inverse-lookups
@@ -81,7 +83,9 @@ class IPNet(Mininet):
         super().__init__(ipBase=ipBase, host=host, switch=switch, link=link,
                          intf=intf, controller=controller, *args, **kwargs)
 
-    def addRouter(self, name: str, cls=None, **params) -> Router:
+    def addRouter(self, name: str,
+                  cls: Union[Type[Router], None] = None,
+                  **params) -> Router:
         """Add a router to the network
 
         :param name: the node name
@@ -95,6 +99,25 @@ class IPNet(Mininet):
         self.routers.append(r)
         self.nameToNode[name] = r
         return r
+
+    def addSwitch(self, name, **opts):
+        """Overwrite method to support Hubs
+           name: switch name
+           opts: switch options
+           returns: switch name"""
+        if 'isHub' in opts:
+            opts['cls'] = self.hub
+        return super().addSwitch(name, **opts)
+
+    def addHub(self, name: str,
+               cls: Union[Type[Hub], None] = None,
+               **params):
+        """Add a hub to the network
+
+        :param name: the node name"""
+        if not cls:
+            cls = self.hub
+        return self.addSwitch(name, cls=cls, **params)
 
     def __iter__(self):
         for r in self.routers:
