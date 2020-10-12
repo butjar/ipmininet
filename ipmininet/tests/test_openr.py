@@ -3,6 +3,7 @@ import os
 import tempfile
 
 from ipmininet.clean import cleanup
+from ipmininet.ipnet import IPNet
 from ipmininet.iptopo import IPTopo
 from ipmininet.router import OpenrRouter
 from ipmininet.node_description import OpenrRouterDescription
