@@ -28,7 +28,7 @@ class SimpleOpenrTopo(IPTopo):
 @require_root
 def test_openr_connectivity():
     try:
-        net = IPNet(topo=SimpleBGPTopo())
+        net = IPNet(topo=SimpleOpenrTopo())
         net.start()
         assert_connectivity(net, v6=True)
         net.stop()
