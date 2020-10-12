@@ -2,10 +2,16 @@ import pytest
 import os
 import tempfile
 
+from ipmininet.clean import cleanup
 from ipmininet.iptopo import IPTopo
 from ipmininet.router import OpenrRouter
 from ipmininet.node_description import OpenrRouterDescription
 from ipmininet.router.config import OpenrRouterConfig
+from ipmininet.tests.utils import assert_connectivity
+
+
+from . import require_root
+
 
 class SimpleOpenrTopo(IPTopo):
     def build(self, *args, **kwargs):
