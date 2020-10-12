@@ -1,5 +1,6 @@
 import pytest
-import subprocess
+import os
+import tempfile
 
 from ipmininet.iptopo import IPTopo
 from ipmininet.router import OpenrRouter
@@ -32,6 +33,7 @@ def test_logdir_creation():
     try:
         net = IPNet(topo=SimpleOpenrTopo())
         net.start()
+        log_dir = '/var/tmp/log'
         log_dir_content = os.listdir('/var/tmp/log')
         for i in range(1, 4):
             assert f'r{i}' in log_dir_content
@@ -44,9 +46,14 @@ def test_tmp_isolation():
     try:
         net = IPNet(topo=SimpleOpenrTopo())
         net.start()
-        tmp_dir_content = os.listdir('/tmp')
-        for i in range(1, 4):
-            tmp_files = net[f'r{i}'].cmd('ls /tmp')
+        tmp_dir = '/tmp'
+        with tempfile.NamedTemporaryFile(dir=tmp_dir) as f:
+            file_base_name = os.path.basename(f.name)
+            host_tmp_dir_content = os.listdir(tmp_dir)
+            assert file_base_name in host_tmp_dir_content
+            for i in range(1, 4):
+                node_tmp_dir_content = net[f'r{i}'].cmd('ls /tmp').split()
+                assert not file_base_name in node_tmp_dir_content
         net.stop()
     finally:
         cleanup()
