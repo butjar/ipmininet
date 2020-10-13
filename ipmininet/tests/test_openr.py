@@ -15,13 +15,19 @@ from . import require_root
 
 
 class SimpleOpenrTopo(IPTopo):
+    def __init__(self, *args, **kwargs):
+        self.r4_log_dir = '/var/temp/different/log/location'
+        super().__init__(*args, **kwargs)
+
     def build(self, *args, **kwargs):
         r1, r2, r3 = \
             self.addRouters('r1', 'r2', 'r3',
                             cls=OpenrRouter,
                             routerDescription=OpenrRouterDescription,
                             config=OpenrRouterConfig)
-        self.addLinks((r1, r2), (r1, r3))
+        r4 = self.addRouter('r4')
+        r4.addOpenrDaemon(log_dir=self.r4_log_dir)
+        self.addLinks((r1, r2), (r1, r3), (r3, r4))
         super().build(*args, **kwargs)
 
 
@@ -38,12 +44,18 @@ def test_openr_connectivity():
 @require_root
 def test_logdir_creation():
     try:
-        net = IPNet(topo=SimpleOpenrTopo())
+        topo = SimpleOpenrTopo()
+        net = IPNet(topo=topo)
         net.start()
         log_dir = '/var/tmp/log'
         log_dir_content = os.listdir('/var/tmp/log')
+
         for i in range(1, 4):
             assert f'r{i}' in log_dir_content
+
+        assert not 'r4' in log_dir_content
+        assert os.path.isdir(topo.r4_log_dir)
+
         net.stop()
     finally:
         cleanup()
