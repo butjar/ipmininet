@@ -25,7 +25,7 @@ class SimpleOpenrTopo(IPTopo):
                             cls=OpenrRouter,
                             routerDescription=OpenrRouterDescription,
                             config=OpenrRouterConfig)
-        r4 = self.addRouter(r4, routerDescription=OpenrRouterDescription)
+        r4 = self.addRouter('r4', routerDescription=OpenrRouterDescription)
         r4.addOpenrDaemon(log_dir=self.r4_log_dir)
         self.addLinks((r1, r2), (r1, r3), (r3, r4))
         super().build(*args, **kwargs)
